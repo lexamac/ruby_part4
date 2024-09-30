@@ -1,11 +1,10 @@
 class Station
+
+  attr_reader :trains
+
   def initialize(station_name)
     @station_name = station_name
     @trains = []
-  end
-
-  def trains
-    @trains
   end
 
   def trains_by_type(type)
@@ -23,6 +22,9 @@ end
 
 
 class Route
+
+  attr_reader :stations, :start_station, :end_station
+
   def initialize(start_station, end_station)
     @stations = []
     @start_station = start_station
@@ -38,22 +40,13 @@ class Route
   def remvoe_station
     @stations.delete_at(-2) if @stations.length > 2
   end
-
-  def stations
-    @stations
-  end
-
-  def start_station
-    @start_station
-  end
-
-  def end_station
-    @end_station
-  end
 end
 
 
 class Train
+
+  attr_reader :speed, :type, :wagon_count, :current_station, :previous_station, :next_station
+
   def initialize(number, type, wagon_count)
     @number = number
     @type = type
@@ -66,20 +59,8 @@ class Train
     @speed += 1
   end
 
-  def speed
-    @speed
-  end
-
-  def type
-    @type
-  end
-
   def stop
     @speed = 0
-  end
-
-  def wagon_count
-    @wagon_count
   end
 
   def add_wagon
@@ -98,18 +79,6 @@ class Train
     @current_station.add_train(self)
     @previous_station = @route.stations[0]
     @next_station = @route.stations[1]
-  end
-
-  def current_station
-    @current_station
-  end
-
-  def previous_station
-    @previous_station
-  end
-
-  def next_station
-    @next_station
   end
 
   def move_forward
