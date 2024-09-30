@@ -27,7 +27,9 @@ class Route
 
   def initialize(start_station, end_station)
     @start_station = start_station
+    @stations << start_station
     @end_station = end_station
+    @stations << end_station
   end
 
   def add_station(station)
@@ -41,6 +43,14 @@ class Route
   def stations
     @stations
   end
+
+  def start_station
+    @start_station
+  end
+
+  def end_station
+    @end_station
+  end
 end
 
 
@@ -50,6 +60,7 @@ class Train
     @type = type
     @wagon_count = wagon_count
     @speed = 0
+    @route = nil
   end
 
   def increase_speed
@@ -82,9 +93,10 @@ class Train
 
   def set_route(route)
     @route = route
-    @route.stations[0].add_train(self)
+
     @station_position = 0
     @current_station = @route.stations[0]
+    @current_station.add_train(self)
     @last_station = @route.stations[0]
     @next_station = @route.stations[1]
   end
@@ -102,16 +114,24 @@ class Train
   end
 
   def move_forward
-    @last_station = @current_station
-    @current_station = @next_station
-    @station_position += 1
-    @next_station = @route.stations[@station_position + 1]
+    if !@route.nil? && @route.stations.length > @station_position
+      @last_station = @current_station
+      @current_station.send_train
+      @current_station = @next_station
+      @current_station.add_train(self)
+      @station_position += 1
+      @next_station = @route.stations[@station_position + 1]
+    end
   end
 
   def move_backward
-    @next_station = @current_station
-    @current_station = @last_station
-    @station_position -= 1
-    @last_station = @route.stations[@station_position - 1]
+    if !@route.nil? && @station_position > 0
+      @next_station = @current_station
+      @current_station.send_train
+      @current_station = @last_station
+      @current_station.add_train(self)
+      @station_position -= 1
+      @last_station = @route.stations[@station_position - 1]
+    end
   end
 end
