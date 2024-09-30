@@ -23,9 +23,8 @@ end
 
 
 class Route
-  @stations = []
-
   def initialize(start_station, end_station)
+    @stations = []
     @start_station = start_station
     @stations << start_station
     @end_station = end_station
@@ -97,7 +96,7 @@ class Train
     @station_position = 0
     @current_station = @route.stations[0]
     @current_station.add_train(self)
-    @last_station = @route.stations[0]
+    @previous_station = @route.stations[0]
     @next_station = @route.stations[1]
   end
 
@@ -105,8 +104,8 @@ class Train
     @current_station
   end
 
-  def last_station
-    @last_station
+  def previous_station
+    @previous_station
   end
 
   def next_station
@@ -114,24 +113,24 @@ class Train
   end
 
   def move_forward
-    if !@route.nil? && @route.stations.length > @station_position
-      @last_station = @current_station
+    if !@route.nil? && @route.end_station != @current_station
+      @previous_station = @current_station
       @current_station.send_train
       @current_station = @next_station
       @current_station.add_train(self)
       @station_position += 1
-      @next_station = @route.stations[@station_position + 1]
+      @next_station = @route.end_station != @current_station ? @route.stations[@station_position + 1] : nil
     end
   end
 
   def move_backward
-    if !@route.nil? && @station_position > 0
+    if !@route.nil? && @route.start_station != @current_station
       @next_station = @current_station
       @current_station.send_train
-      @current_station = @last_station
+      @current_station = @route.stations[@station_position - 1]
       @current_station.add_train(self)
       @station_position -= 1
-      @last_station = @route.stations[@station_position - 1]
+      @previous_station = @route.start_station != @current_station ? @route.stations[@station_position - 1] : @next_station
     end
   end
 end
